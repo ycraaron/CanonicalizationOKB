@@ -2,6 +2,7 @@ from __future__ import division
 from stop_words import get_stop_words
 import string
 
+
 class Jaccard:
 
     def __init__(self, str_1, str_2):
@@ -43,10 +44,4 @@ class Jaccard:
                 item.remove(token)
         return item
 
-jaccard = Jaccard("Aaron", "Aaron, is a awesome genius")
 
-similarity = jaccard.similarity()
-distance = jaccard.distance()
-
-print similarity
-print distance
