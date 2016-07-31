@@ -32,14 +32,34 @@ ls_subject = ['Aer Lingus', 'Aer Lingus', 'Aer Lingus', 'Aer Lingus', 'Aer Lingu
 
 ls_distance_final = []
 ls_distance_row = []
-for i in range(0, len(ls_subject)):
-    for j in range(0, len(ls_subject)):
+
+for i in range(0,300):
+    for j in range(0,300):
+        print i + 1, j + 1
         distance = jellyfish.jaro_winkler(unicode(ls_subject[i]), unicode(ls_subject[j]))
         ls_distance_row.append(distance)
     ls_distance_final.append(ls_distance_row)
 
-Z = linkage(ls_distance_final)
-print Z[1]
+# for i in range(0, len(ls_subject)):
+#     for j in range(0, len(ls_subject)):
+#         print i+1,j+1
+#         distance = jellyfish.jaro_winkler(unicode(ls_subject[i]), unicode(ls_subject[j]))
+#         ls_distance_row.append(distance)
+#     ls_distance_final.append(ls_distance_row)
+
+Z = linkage(ls_distance_final, "ward")
+print Z
+print len(Z)
+#print Z[1]
+plt.figure(figsize=(25, 10))
+plt.title('Hierarchical Clustering Dendrogram')
+plt.xlabel('sample index')
+plt.ylabel('distance')
+dendrogram(Z, leaf_rotation=90., leaf_font_size=8.,)
+plt.show()
+
+
+
 #print ls_distance_final
 
 
