@@ -1,8 +1,12 @@
+from __future__ import division
+
 from matplotlib import pyplot as plt
 from scipy.cluster.hierarchy import dendrogram, linkage
+import scipy.spatial.distance as ssd
 import numpy as np
 import main
 import jellyfish
+
 
 
 # np.random.seed(4711)  # for repeatability of this tutorial
@@ -30,26 +34,59 @@ ls_subject = ['Aer Lingus', 'Aer Lingus', 'Aer Lingus', 'Aer Lingus', 'Aer Lingu
 
 #jarowinker = jellyfish.jaro_winkler(unicode(ls_subject[0]),unicode(ls_subject[1]))
 
-ls_distance_final = []
-ls_distance_row = []
-for i in range(0, len(ls_subject)):
-    for j in range(0, len(ls_subject)):
-        distance = jellyfish.jaro_winkler(unicode(ls_subject[i]), unicode(ls_subject[j]))
-        ls_distance_row.append(distance)
-    ls_distance_final.append(ls_distance_row)
+def cal_simi():
+    ls_distance_final = []
+    ls_distance_row = []
+    for i in range(0, len(ls_subject)):
+        if i == 500 or i == 1000 or i == 1500:
+            print i
+        for j in range(0, len(ls_subject)):
+            distance = 1 - jellyfish.jaro_winkler(unicode(ls_subject[i]), unicode(ls_subject[j]))
+            ls_distance_row.append(distance)
+        ls_distance_final.append(ls_distance_row)
+        ls_distance_row = []
 
-Z = linkage(ls_distance_final)
-print Z[1]
-#print ls_distance_final
+    myarray = np.asarray(ls_distance_final)
+    #distarray = ssd.squareform(myarray)
+    #print myarray
+    Z = linkage(myarray,"ward")
+    thefile = open('/Users/Aaron/test.txt', 'w')
+    for item in Z:
+      thefile.write("%s\n" % item)
+
+    #print ls_distance_final
+
+    # plt.figure(figsize=(25, 10))
+    # plt.title('Hierarchical Clustering Dendrogram')
+    # plt.xlabel('sample index')
+    # plt.ylabel('distance')
+    # dendrogram(
+    #      Z,
+    #      leaf_rotation=90.,  # rotates the x axis labels
+    #      leaf_font_size=8.,  # font size for the x axis labels
+    #  )
+    # plt.show()
 
 
+    plt.title('Hierarchical Clustering Dendrogram (truncated)')
+    plt.xlabel('sample index')
+    plt.ylabel('distance')
+    dendrogram(
+        Z,
+        truncate_mode='lastp',  # show only the last p merged clusters
+        p=30,  # show only the last p merged clusters
+        show_leaf_counts=True,  # otherwise numbers in brackets are counts
+        leaf_rotation=90.,
+        leaf_font_size=12.,
+        show_contracted=True,  # to get a distribution impression in truncated branches
+    )
+    plt.show()
+
+    #print jarowinker
+    # jarowinker = jellyfish.jaro_winkler(u'MARTHA tmp', u'MARTHA tmp')
 
 
-#print jarowinker
-# jarowinker = jellyfish.jaro_winkler(u'MARTHA tmp', u'MARTHA tmp')
-
-
-#print ls_corpus
-a = ls_corpus
-b = ls_corpus
-#main.get_subject()
+    #print ls_corpus
+    a = ls_corpus
+    b = ls_corpus
+    #main.get_subject()
