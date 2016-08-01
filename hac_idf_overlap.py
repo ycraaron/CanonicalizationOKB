@@ -5,14 +5,14 @@ from matplotlib import pyplot as plt
 from scipy.cluster.hierarchy import dendrogram, linkage
 import scipy.spatial.distance as ssd
 import numpy as np
-import jaccard
+import IDF
 import MySQLdb
 import utils
 
 def get_corpus():
     db_conn = MySQLdb.connect(host="localhost", port=8889, db="linked_reverb", user="root", passwd="root")
     cursor = db_conn.cursor()
-    cursor.execute("select relation, argument2 from linked_entity80_a order by id")
+    cursor.execute("select argument1 from linked_entity80_a order by id")
 
     ls_result = []
     ls_corpus = []
@@ -20,25 +20,34 @@ def get_corpus():
     row_count = int(cursor.rowcount)
     for i in range(0, row_count):
         row = cursor.fetchone()
-        ls_result.append(row[0]+' '+row[1])
-    print ls_result
+        ls_result.append(row[0])
+    print len(ls_result)
 
-
-def cal_attr_overlap():
-    list_att = utils.list_attr
+def cal_idf_overlap():
+    list_subj = utils.list_subject
 
     ls_distance_final = []
     ls_distance_row = []
-    print len(list_att)
-    length = len(list_att)
-    length = 200
+    #print len(list_att)
+    stop_words = get_stop_words('en')
+    tmp_corpus = []
+    for i in range(len(list_subj)):
+        item = str(list_subj[i]).split(" ")
+        for token in item:
+            if token in stop_words:
+                pass
+            else:
+                tmp_corpus.append(token)
+    #print "corpus", corpus
+
+    length = len(list_subj)
     for i in range(0, length):
         if i == 500 or i == 1000 or i == 1500:
             print i
         for j in range(0, length):
-            print i,j
-            jaccard_instance = jaccard.Jaccard(list_att[i],list_att[j])
-            distance = jaccard_instance.distance()
+            print i, j
+            idf_instance = IDF.IDF(str(list_subj[i]),str(list_subj[j]), tmp_corpus)
+            distance = idf_instance.cal_overlap()
             ls_distance_row.append(distance)
         ls_distance_final.append(ls_distance_row)
         ls_distance_row = []
@@ -74,6 +83,6 @@ def cal_attr_overlap():
         show_contracted=True,  # to get a distribution impression in truncated branches
     )
     plt.show()
-
 #get_corpus()
-#cal_attr_overlap()
+
+cal_idf_overlap()
