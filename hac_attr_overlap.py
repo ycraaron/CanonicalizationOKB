@@ -36,6 +36,7 @@ def cal_attr_overlap():
         if i == 500 or i == 1000 or i == 1500:
             print i
         for j in range(0, length):
+            print i,j
             jaccard_instance = jaccard.Jaccard(list_att[i],list_att[j])
             distance = jaccard_instance.distance()
             ls_distance_row.append(distance)
@@ -74,5 +75,5 @@ def cal_attr_overlap():
     )
     plt.show()
 
-get_corpus()
+#get_corpus()
 cal_attr_overlap()
